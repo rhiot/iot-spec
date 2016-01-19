@@ -30,9 +30,17 @@ public class Driver implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Driver.class);
 
+    protected String name;
+
     List<Feature> features = new ArrayList<Feature>();
     Transport transport;
     Result result = new Result();
+
+    ExecutorService executorService;
+
+    public Driver(String name) {
+        this.name = name;
+    }
 
     @Override
     public Void call() throws Exception {
@@ -41,7 +49,7 @@ public class Driver implements Callable<Void> {
             transport.connect();
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(features.size());
+        executorService = Executors.newFixedThreadPool(features.size());
         executorService.invokeAll(features);
         executorService.shutdown();
 
@@ -68,4 +76,25 @@ public class Driver implements Callable<Void> {
         return result;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void stop() {
+        features.forEach(driver -> {
+            driver.stop();
+        });
+        try {
+            transport.disconnect();
+        } catch (Exception e) {
+            LOG.warn("Could not stop transport", e);
+        }
+        if (executorService != null) {
+            executorService.shutdown();
+        }
+    }
 }

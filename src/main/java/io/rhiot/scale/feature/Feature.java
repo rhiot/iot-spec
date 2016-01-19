@@ -23,9 +23,13 @@ import java.util.concurrent.Callable;
 public abstract class Feature implements Callable<Void> {
 
     protected Driver device;
+    protected boolean stop;
 
     protected Feature(Driver device) {
         this.device = device;
     }
 
+    public void stop() {
+        stop = true;
+    }
 }

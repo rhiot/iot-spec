@@ -20,21 +20,34 @@ import io.rhiot.scale.Driver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
+
 public class TelemetryFeature extends Feature {
 
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryFeature.class);
 
-    public TelemetryFeature(Driver device) {
+    String topic;
+    long sleep = 500;
+    int messageSize = 1024;
+    int messageNumber = -1;
+
+    public TelemetryFeature(Driver device, String topic) {
         super(device);
+        this.topic = topic;
     }
 
     @Override
     public Void call() throws Exception {
         LOG.debug("Starting telemetry feature");
-        for (int i = 0; i < 1000; i++) {
-            device.getTransport().publish("test", ("test " + i).getBytes());
+        Random rnd = new Random();
+        byte[] message = new byte[messageSize];
+        rnd.nextBytes(message);
+        int count = 0;
+        while (!stop || (messageNumber < 0) || count < messageNumber) {
+            device.getTransport().publish(topic, message);
             device.getResult().published();
-            Thread.sleep(50);
+            Thread.sleep(sleep);
+            count++;
         }
         LOG.debug("Telemetry feature finished");
         return null;

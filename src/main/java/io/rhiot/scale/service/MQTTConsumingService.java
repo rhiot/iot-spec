@@ -24,12 +24,15 @@ import io.rhiot.scale.transport.MQTTTransport;
 public class MQTTConsumingService extends Driver {
 
     String brokerURL;
+    String topic;
 
-    public MQTTConsumingService(String brokerURL) {
+    public MQTTConsumingService(String brokerURL, String name, String topic) {
+        super(name);
         this.brokerURL = brokerURL;
-        Transport transport = new MQTTTransport(brokerURL, "consumer-service");
+        this.topic = topic;
+        Transport transport = new MQTTTransport(brokerURL, name);
         this.setTransport(transport);
-        this.getFeatures().add(new ConsumeFeature(this));
+        this.getFeatures().add(new ConsumeFeature(this, topic));
     }
 
     @Override

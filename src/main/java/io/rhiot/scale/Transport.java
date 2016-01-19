@@ -24,8 +24,10 @@ public interface Transport {
 
     public void disconnect() throws Exception;
 
-    public void subscribe(String topic, Listener listener) throws Exception;
+    public void subscribe(String topic) throws Exception;
 
     public void publish(String topic, byte[] message) throws Exception;
+
+    public void addListener(Listener listener);
 
 }

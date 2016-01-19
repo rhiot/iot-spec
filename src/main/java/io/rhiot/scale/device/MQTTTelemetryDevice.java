@@ -21,23 +21,24 @@ import io.rhiot.scale.Transport;
 import io.rhiot.scale.feature.TelemetryFeature;
 import io.rhiot.scale.transport.MQTTTransport;
 
-public class KuraMQTTDevice extends Driver {
+public class MQTTTelemetryDevice extends Driver {
 
     String brokerURL;
-    String clientId;
+    String dataTopic;
 
-    public KuraMQTTDevice(String brokerURL, String clientId) {
+    public MQTTTelemetryDevice(String brokerURL, String name, String dataTopic) {
+        super(name);
         this.brokerURL = brokerURL;
-        this.clientId = clientId;
-        Transport transport = new MQTTTransport(brokerURL, clientId);
+        this.dataTopic = dataTopic;
+        Transport transport = new MQTTTransport(brokerURL, name);
         this.setTransport(transport);
-        this.getFeatures().add(new TelemetryFeature(this));
+        this.getFeatures().add(new TelemetryFeature(this, dataTopic));
     }
 
     @Override
     public String toString() {
-        return "KuraMQTTDevice{" +
-                "clientId='" + clientId + '\'' +
+        return "MQTTTelemetryDevice{" +
+                "name='" + name + '\'' +
                 '}';
     }
 }

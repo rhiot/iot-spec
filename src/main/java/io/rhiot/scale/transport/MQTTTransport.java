@@ -22,8 +22,12 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MQTTTransport implements Transport {
 
@@ -32,6 +36,7 @@ public class MQTTTransport implements Transport {
     private MqttClient client;
     private String clientId;
     private String brokerUrl;
+    private List<Listener> listeners = new ArrayList<Listener>();
 
     public MQTTTransport(String brokerUrl, String clientId) {
         this.brokerUrl = brokerUrl;
@@ -40,7 +45,8 @@ public class MQTTTransport implements Transport {
 
     @Override
     public void connect() throws Exception {
-        client = new MqttClient(brokerUrl, clientId);
+        client = new MqttClient(brokerUrl, clientId, new MemoryPersistence());
+
         //TODO handle options
         client.connect();
     }
@@ -53,7 +59,7 @@ public class MQTTTransport implements Transport {
     }
 
     @Override
-    public void subscribe(String topic, Listener listener) throws Exception {
+    public void subscribe(String topic) throws Exception {
         client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
@@ -62,7 +68,9 @@ public class MQTTTransport implements Transport {
 
             @Override
             public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                listener.onMessage(s, mqttMessage.getPayload());
+                listeners.forEach(listener -> {
+                    listener.onMessage(s, mqttMessage.getPayload());
+                });
             }
 
             @Override
@@ -78,4 +86,8 @@ public class MQTTTransport implements Transport {
         client.publish(topic, message, 1, false);
     }
 
+    @Override
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
 }

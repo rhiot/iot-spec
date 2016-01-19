@@ -14,37 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale.feature;
-
-import io.rhiot.scale.Driver;
-import io.rhiot.scale.transport.CountListener;
-import io.rhiot.scale.transport.LatchListener;
-import io.rhiot.scale.transport.Listener;
+package io.rhiot.scale.transport;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class ConsumeFeature extends Feature {
+public class LatchListener implements Listener  {
 
-    String topic;
-    long timeout = -1;
-    int messageNumber = -1;
+    Integer expected;
+    Long timeout;
+    CountDownLatch latch;
 
-    LatchListener listener;
-
-    public ConsumeFeature(Driver device, String topic) {
-        super(device);
-        this.topic = topic;
+    public LatchListener(int expected, long timeout) {
+        this.expected = expected;
+        this.timeout = timeout;
+        if (expected != -1) {
+            latch = new CountDownLatch(expected);
+        } else {
+            latch = new CountDownLatch(1);
+        }
     }
 
     @Override
-    public Void call() throws Exception {
-        listener = new LatchListener(messageNumber, timeout);
-        device.getTransport().addListener(listener);
-        device.getTransport().addListener(new CountListener(device.getResult()));
-        device.getTransport().subscribe(topic);
-        listener.await();
-        return null;
+    public void onMessage(String destination, Object data) {
+        if (expected != -1) {
+            latch.countDown();
+        }
     }
 
+    public void await() throws InterruptedException {
+        if (timeout == -1) {
+            latch.await();
+        } else {
+            latch.await(timeout, TimeUnit.MILLISECONDS);
+        }
+    }
 }

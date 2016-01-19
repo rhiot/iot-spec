@@ -16,7 +16,7 @@
  */
 package io.rhiot.scale;
 
-import io.rhiot.scale.device.KuraMQTTDevice;
+import io.rhiot.scale.device.MQTTTelemetryDevice;
 import io.rhiot.scale.service.MQTTConsumingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class IoTSpec {
 
@@ -33,22 +34,24 @@ public class IoTSpec {
     public static void main(String[] args) throws Exception {
 
         final List<Driver> drivers = new ArrayList();
+        //TODO duration config
         LOG.info("Scale Test Started");
         //TODO load configuration
         //add devices
         for (int i = 0; i < 200; i++) {
-            drivers.add(new KuraMQTTDevice("tcp://localhost:1883", "client-" + i));
+            drivers.add(new MQTTTelemetryDevice("tcp://localhost:1883", "kura-" + i, "kura-" + i));
         }
         //add services
-        drivers.add(new MQTTConsumingService("tcp://localhost:1883"));
+        drivers.add(new MQTTConsumingService("tcp://localhost:1883", "wiretap", "#"));
 
 
         // start drivers
         ExecutorService executorService = Executors.newFixedThreadPool(drivers.size());
-        executorService.invokeAll(drivers);
-        executorService.shutdown();
+        executorService.invokeAll(drivers, 5, TimeUnit.MINUTES);
+        executorService.shutdownNow();
 
         drivers.forEach(driver -> {
+            driver.stop();
             LOG.info("Driver " + driver);
             LOG.info("\t " + driver.getResult());
         });
