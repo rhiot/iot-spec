@@ -16,27 +16,71 @@
  */
 package io.rhiot.scale.service;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import io.rhiot.scale.Cluster;
 import io.rhiot.scale.Driver;
 import io.rhiot.scale.Transport;
 import io.rhiot.scale.feature.ConsumeFeature;
 import io.rhiot.scale.transport.MQTTTransport;
 
+@JsonRootName("mqtt-consuming-service")
 public class MQTTConsumingService extends Driver {
 
     String brokerURL;
     String topic;
 
-    public MQTTConsumingService(String brokerURL, String name, String topic) {
+    @JsonCreator
+    public MQTTConsumingService(@JsonProperty("brokerURL")String brokerURL, @JsonProperty("name")String name, @JsonProperty("topic")String topic) {
         super(name);
         this.brokerURL = brokerURL;
         this.topic = topic;
+    }
+
+    public MQTTConsumingService(MQTTConsumingService original) {
+        this(original.getBrokerURL(), original.getName(), original.getTopic());
+    }
+
+    @Override
+    public void init() {
         Transport transport = new MQTTTransport(brokerURL, name);
         this.setTransport(transport);
         this.getFeatures().add(new ConsumeFeature(this, topic));
     }
 
     @Override
+    public Driver loadFromTemplate(Cluster cluster, int position) {
+        MQTTConsumingService result = new MQTTConsumingService(this);
+        // init device from cluster properties
+        if (result.getName() == null && cluster.getName() != null) {
+            result.setName(cluster.getName() + "-" + position);
+        }
+        return result;
+    }
+
+    @Override
     public String toString() {
-        return "MQTTConsumingService{}";
+        return "MQTTConsumingService{" +
+                "brokerURL='" + brokerURL + '\'' +
+                ", topic='" + topic + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public String getBrokerURL() {
+        return brokerURL;
+    }
+
+    public void setBrokerURL(String brokerURL) {
+        this.brokerURL = brokerURL;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

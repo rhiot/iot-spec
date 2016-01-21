@@ -16,7 +16,11 @@
  */
 package io.rhiot.scale;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.rhiot.scale.device.MQTTTelemetryDevice;
 import io.rhiot.scale.feature.Feature;
+import io.rhiot.scale.service.MQTTConsumingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +30,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Driver implements Callable<Void> {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
+              include = JsonTypeInfo.As.PROPERTY,
+              property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = MQTTTelemetryDevice.class, name = "mqtt-telemetry-device"),
+    @JsonSubTypes.Type(value = MQTTConsumingService.class, name = "mqtt-consuming-service")
+})
+abstract public class Driver implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Driver.class);
 
@@ -41,6 +52,10 @@ public class Driver implements Callable<Void> {
     public Driver(String name) {
         this.name = name;
     }
+
+    public abstract Driver loadFromTemplate(Cluster cluster, int position);
+
+    public abstract void init();
 
     @Override
     public Void call() throws Exception {

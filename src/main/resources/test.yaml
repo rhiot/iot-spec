@@ -1,0 +1,15 @@
+duration: 300000
+
+devices:
+- name: kura
+  size: 200
+  driver:
+    type: mqtt-telemetry-device
+    brokerURL: tcp://localhost:1883
+
+services:
+- driver:
+    type: mqtt-consuming-service
+    brokerURL: tcp://localhost:1883
+    name: wiretap
+    topic: '#'

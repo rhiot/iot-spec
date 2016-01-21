@@ -16,11 +16,14 @@
  */
 package io.rhiot.scale;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.rhiot.scale.device.MQTTTelemetryDevice;
 import io.rhiot.scale.service.MQTTConsumingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -32,22 +35,13 @@ public class IoTSpec {
     private static final Logger LOG = LoggerFactory.getLogger(IoTSpec.class);
 
     public static void main(String[] args) throws Exception {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        TestProfile test = mapper.readValue(new File("src/main/resources/test.yaml"), TestProfile.class);
 
-        final List<Driver> drivers = new ArrayList();
-        //TODO duration config
         LOG.info("Scale Test Started");
-        //TODO load configuration
-        //add devices
-        for (int i = 0; i < 200; i++) {
-            drivers.add(new MQTTTelemetryDevice("tcp://localhost:1883", "kura-" + i, "kura-" + i));
-        }
-        //add services
-        drivers.add(new MQTTConsumingService("tcp://localhost:1883", "wiretap", "#"));
-
-
-        // start drivers
+        final List<Driver> drivers = test.getDrivers();
         ExecutorService executorService = Executors.newFixedThreadPool(drivers.size());
-        executorService.invokeAll(drivers, 5, TimeUnit.MINUTES);
+        executorService.invokeAll(drivers, test.getDuration(), TimeUnit.MILLISECONDS);
         executorService.shutdownNow();
 
         drivers.forEach(driver -> {
