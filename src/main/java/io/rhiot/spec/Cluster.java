@@ -14,10 +14,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale.transport;
+package io.rhiot.spec;
 
-public interface Listener {
+public class Cluster {
 
-    public void onMessage(String destination, Object data);
+     int size = 1;
+     Driver driver;
+     String name;
+
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    @Override
+    public String toString() {
+        return "Cluster{" +
+                "size=" + size +
+                ", driver=" + driver +
+                ", name='" + name + '\'' +
+                '}';
+    }
 
 }

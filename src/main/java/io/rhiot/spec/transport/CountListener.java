@@ -14,39 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale.transport;
+package io.rhiot.spec.transport;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import io.rhiot.spec.Result;
 
-public class LatchListener implements Listener  {
+public class CountListener implements Listener {
 
-    Integer expected;
-    Long timeout;
-    CountDownLatch latch;
+    Result result;
 
-    public LatchListener(int expected, long timeout) {
-        this.expected = expected;
-        this.timeout = timeout;
-        if (expected != -1) {
-            latch = new CountDownLatch(expected);
-        } else {
-            latch = new CountDownLatch(1);
-        }
+    public CountListener(Result result) {
+        this.result = result;
     }
 
     @Override
     public void onMessage(String destination, Object data) {
-        if (expected != -1) {
-            latch.countDown();
-        }
-    }
-
-    public void await() throws InterruptedException {
-        if (timeout == -1) {
-            latch.await();
-        } else {
-            latch.await(timeout, TimeUnit.MILLISECONDS);
-        }
+        result.received();
     }
 }

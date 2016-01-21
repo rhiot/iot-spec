@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale;
+package io.rhiot.spec;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.rhiot.scale.device.MQTTTelemetryDevice;
-import io.rhiot.scale.feature.Feature;
-import io.rhiot.scale.service.MQTTConsumingService;
+import io.rhiot.spec.device.MQTTTelemetryDevice;
+import io.rhiot.spec.feature.Feature;
+import io.rhiot.spec.service.MQTTConsumingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

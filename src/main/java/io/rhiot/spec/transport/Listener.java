@@ -14,22 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale.feature;
+package io.rhiot.spec.transport;
 
-import io.rhiot.scale.Driver;
+public interface Listener {
 
-import java.util.concurrent.Callable;
+    public void onMessage(String destination, Object data);
 
-public abstract class Feature implements Callable<Void> {
-
-    protected Driver device;
-    protected boolean stop;
-
-    protected Feature(Driver device) {
-        this.device = device;
-    }
-
-    public void stop() {
-        stop = true;
-    }
 }

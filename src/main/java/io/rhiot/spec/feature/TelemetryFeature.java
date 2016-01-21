@@ -14,36 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale.feature;
+package io.rhiot.spec.feature;
 
-import io.rhiot.scale.Driver;
-import io.rhiot.scale.transport.CountListener;
-import io.rhiot.scale.transport.LatchListener;
-import io.rhiot.scale.transport.Listener;
+import io.rhiot.spec.Driver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.Random;
 
-public class ConsumeFeature extends Feature {
+public class TelemetryFeature extends Feature {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TelemetryFeature.class);
 
     String topic;
-    long timeout = -1;
+    long sleep = 500;
+    int messageSize = 1024;
     int messageNumber = -1;
 
-    LatchListener listener;
-
-    public ConsumeFeature(Driver device, String topic) {
+    public TelemetryFeature(Driver device, String topic) {
         super(device);
         this.topic = topic;
     }
 
     @Override
     public Void call() throws Exception {
-        listener = new LatchListener(messageNumber, timeout);
-        device.getTransport().addListener(listener);
-        device.getTransport().addListener(new CountListener(device.getResult()));
-        device.getTransport().subscribe(topic);
-        listener.await();
+        LOG.debug("Starting telemetry feature");
+        Random rnd = new Random();
+        byte[] message = new byte[messageSize];
+        rnd.nextBytes(message);
+        int count = 0;
+        while (!stop || (messageNumber < 0) || count < messageNumber) {
+            device.getTransport().publish(topic, message);
+            device.getResult().published();
+            Thread.sleep(sleep);
+            count++;
+        }
+        LOG.debug("Telemetry feature finished");
         return null;
     }
 

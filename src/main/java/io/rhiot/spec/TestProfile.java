@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale;
+package io.rhiot.spec;
 
 import java.util.ArrayList;
 import java.util.List;

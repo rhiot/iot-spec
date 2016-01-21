@@ -14,20 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale;
+package io.rhiot.spec.feature;
 
-import io.rhiot.scale.transport.Listener;
+import io.rhiot.spec.Driver;
+import io.rhiot.spec.transport.CountListener;
+import io.rhiot.spec.transport.LatchListener;
 
-public interface Transport {
+public class ConsumeFeature extends Feature {
 
-    public void connect() throws Exception;
+    String topic;
+    long timeout = -1;
+    int messageNumber = -1;
 
-    public void disconnect() throws Exception;
+    LatchListener listener;
 
-    public void subscribe(String topic) throws Exception;
+    public ConsumeFeature(Driver device, String topic) {
+        super(device);
+        this.topic = topic;
+    }
 
-    public void publish(String topic, byte[] message) throws Exception;
-
-    public void addListener(Listener listener);
+    @Override
+    public Void call() throws Exception {
+        listener = new LatchListener(messageNumber, timeout);
+        device.getTransport().addListener(listener);
+        device.getTransport().addListener(new CountListener(device.getResult()));
+        device.getTransport().subscribe(topic);
+        listener.await();
+        return null;
+    }
 
 }

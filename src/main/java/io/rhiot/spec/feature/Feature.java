@@ -14,50 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale;
+package io.rhiot.spec.feature;
 
-import io.rhiot.scale.service.MQTTConsumingService;
+import io.rhiot.spec.Driver;
 
-import java.util.List;
+import java.util.concurrent.Callable;
 
-public class Cluster {
+public abstract class Feature implements Callable<Void> {
 
-     int size = 1;
-     Driver driver;
-     String name;
+    protected Driver device;
+    protected boolean stop;
 
-
-    public int getSize() {
-        return size;
+    protected Feature(Driver device) {
+        this.device = device;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void stop() {
+        stop = true;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Driver getDriver() {
-        return driver;
-    }
-
-    public void setDriver(Driver driver) {
-        this.driver = driver;
-    }
-
-    @Override
-    public String toString() {
-        return "Cluster{" +
-                "size=" + size +
-                ", driver=" + driver +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
 }

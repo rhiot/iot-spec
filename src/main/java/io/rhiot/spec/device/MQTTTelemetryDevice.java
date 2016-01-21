@@ -14,58 +14,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale.service;
+package io.rhiot.spec.device;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import io.rhiot.scale.Cluster;
-import io.rhiot.scale.Driver;
-import io.rhiot.scale.Transport;
-import io.rhiot.scale.feature.ConsumeFeature;
-import io.rhiot.scale.transport.MQTTTransport;
+import io.rhiot.spec.Cluster;
+import io.rhiot.spec.Driver;
+import io.rhiot.spec.Transport;
+import io.rhiot.spec.feature.TelemetryFeature;
+import io.rhiot.spec.transport.MQTTTransport;
 
-@JsonRootName("mqtt-consuming-service")
-public class MQTTConsumingService extends Driver {
+@JsonRootName("mqtt-telemetry-device")
+public class MQTTTelemetryDevice extends Driver {
 
     String brokerURL;
-    String topic;
+    String dataTopic;
 
     @JsonCreator
-    public MQTTConsumingService(@JsonProperty("brokerURL")String brokerURL, @JsonProperty("name")String name, @JsonProperty("topic")String topic) {
+    public MQTTTelemetryDevice(@JsonProperty("brokerURL")String brokerURL, @JsonProperty("name")String name, @JsonProperty("data-topic")String dataTopic) {
         super(name);
         this.brokerURL = brokerURL;
-        this.topic = topic;
+        this.dataTopic = dataTopic;
     }
 
-    public MQTTConsumingService(MQTTConsumingService original) {
-        this(original.getBrokerURL(), original.getName(), original.getTopic());
+    public MQTTTelemetryDevice(MQTTTelemetryDevice original) {
+        this(original.getBrokerURL(), original.getName(), original.getDataTopic()) ;
     }
 
     @Override
     public void init() {
         Transport transport = new MQTTTransport(brokerURL, name);
         this.setTransport(transport);
-        this.getFeatures().add(new ConsumeFeature(this, topic));
+        this.getFeatures().add(new TelemetryFeature(this, dataTopic));
     }
 
     @Override
     public Driver loadFromTemplate(Cluster cluster, int position) {
-        MQTTConsumingService result = new MQTTConsumingService(this);
+        MQTTTelemetryDevice result = new MQTTTelemetryDevice(this);
         // init device from cluster properties
         if (result.getName() == null && cluster.getName() != null) {
             result.setName(cluster.getName() + "-" + position);
         }
+        if (result.dataTopic == null && cluster.getName() != null) {
+            result.setDataTopic(cluster.getName() + "-" + position);
+        }
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "MQTTConsumingService{" +
-                "brokerURL='" + brokerURL + '\'' +
-                ", topic='" + topic + '\'' +
-                ", name='" + name + '\'' +
-                '}';
     }
 
     public String getBrokerURL() {
@@ -76,11 +70,20 @@ public class MQTTConsumingService extends Driver {
         this.brokerURL = brokerURL;
     }
 
-    public String getTopic() {
-        return topic;
+    public String getDataTopic() {
+        return dataTopic;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
+    public void setDataTopic(String dataTopic) {
+        this.dataTopic = dataTopic;
+    }
+
+    @Override
+    public String toString() {
+        return "MQTTTelemetryDevice{" +
+                "brokerURL='" + brokerURL + '\'' +
+                ", dataTopic='" + dataTopic + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.rhiot.scale.transport;
+package io.rhiot.spec.transport;
 
-import io.rhiot.scale.Result;
-import io.rhiot.scale.Transport;
+import io.rhiot.spec.Transport;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
