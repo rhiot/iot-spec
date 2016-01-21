@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.rhiot.scale.device.MQTTTelemetryDevice;
 import io.rhiot.scale.service.MQTTConsumingService;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +34,22 @@ import java.util.concurrent.TimeUnit;
 public class IoTSpec {
 
     private static final Logger LOG = LoggerFactory.getLogger(IoTSpec.class);
+    private static final String CONFIG = "config";
 
     public static void main(String[] args) throws Exception {
+
+        CommandLineParser parser = new DefaultParser();
+
+        Options options = new Options();
+        options.addOption(Option.builder("c")
+                .longOpt(CONFIG)
+                .desc("Location of the test configuration file. A default value is 'src/main/resources/test.yaml' for easy IDE testing")
+                .hasArg()
+                .build());
+
+        CommandLine line = parser.parse(options, args);
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        TestProfile test = mapper.readValue(new File("src/main/resources/test.yaml"), TestProfile.class);
+        TestProfile test = mapper.readValue(new File(line.getOptionValue(CONFIG, "src/main/resources/test.yaml")), TestProfile.class);
 
         LOG.info("Scale Test Started");
         final List<Driver> drivers = test.getDrivers();
