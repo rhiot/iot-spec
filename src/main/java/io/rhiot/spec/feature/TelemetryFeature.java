@@ -27,7 +27,7 @@ public class TelemetryFeature extends Feature {
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryFeature.class);
 
     String topic;
-    long sleep = 500;
+    long delay = 500;
     int messageSize = 1024;
     int messageNumber = -1;
 
@@ -46,11 +46,18 @@ public class TelemetryFeature extends Feature {
         while (!stop || (messageNumber < 0) || count < messageNumber) {
             device.getTransport().publish(topic, message);
             device.getResult().published();
-            Thread.sleep(sleep);
+            Thread.sleep(delay);
             count++;
         }
         LOG.debug("Telemetry feature finished");
         return null;
     }
 
+    public long getDelay() {
+        return delay;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
 }

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import io.rhiot.spec.Cluster;
 import io.rhiot.spec.Driver;
 import io.rhiot.spec.Transport;
+import io.rhiot.spec.feature.Feature;
 import io.rhiot.spec.feature.TelemetryFeature;
 import io.rhiot.spec.transport.MQTTTransport;
 
@@ -30,6 +31,7 @@ public class MQTTTelemetryDevice extends Driver {
 
     String brokerURL;
     String dataTopic;
+    long delay = 500;
 
     @JsonCreator
     public MQTTTelemetryDevice(@JsonProperty("brokerURL")String brokerURL, @JsonProperty("name")String name, @JsonProperty("data-topic")String dataTopic) {
@@ -46,12 +48,15 @@ public class MQTTTelemetryDevice extends Driver {
     public void init() {
         Transport transport = new MQTTTransport(brokerURL, name);
         this.setTransport(transport);
-        this.getFeatures().add(new TelemetryFeature(this, dataTopic));
+        TelemetryFeature telemetry = new TelemetryFeature(this, dataTopic);
+        telemetry.setDelay(delay);
+        this.getFeatures().add(telemetry);
     }
 
     @Override
     public Driver loadFromTemplate(Cluster cluster, int position) {
         MQTTTelemetryDevice result = new MQTTTelemetryDevice(this);
+        result.setDelay(delay);
         // init device from cluster properties
         if (result.getName() == null && cluster.getName() != null) {
             result.setName(cluster.getName() + "-" + position);
@@ -78,12 +83,21 @@ public class MQTTTelemetryDevice extends Driver {
         this.dataTopic = dataTopic;
     }
 
+    public long getDelay() {
+        return delay;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
+
     @Override
     public String toString() {
         return "MQTTTelemetryDevice{" +
                 "brokerURL='" + brokerURL + '\'' +
                 ", dataTopic='" + dataTopic + '\'' +
-                ", name='" + name + '\'' +
+                ", delay=" + delay +
+                ", name=" + name +
                 '}';
     }
 }
