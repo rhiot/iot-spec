@@ -62,7 +62,7 @@ More documentation on this topic is coming in the future.
 
 ## TODO
 
-* Add more transports (AMQP, JMS, LwM2M, ...)
+* Add more transports (AMQP, JMS, LwM2M, ...) and options (autentication, SSL, ...)
 * Add more features and more options (request/reply, reconnecting, bursting, randomness, ...)
 * Provide more programmable test execution, like don't start all devices at once, but add them linearly over time or in bursts
 * Reporting - save test results in suitable formats (csv for example) for later analysis
