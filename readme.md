@@ -2,7 +2,8 @@
 
 This project is a tool for integration and scalability testing of IoT server platforms (brokers, connectors, etc.). 
 It consists of a framework for modeling different kinds of IoT devices and backend services which can be easily configured and
-ran at scale against the platform.
+ran at scale against the platform. You can use it to test different server platforms, configurations and architectures and get 
+a comparable results in terms of the scalability of the platform for the specific scenarios.
 
 ## Abstractions
 
