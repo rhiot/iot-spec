@@ -38,7 +38,8 @@ services:
     type: mqtt-consuming-service
     brokerURL: tcp://localhost:1883
     name: wiretap
-    topic: '#'```
+    topic: '#'
+```
     
 It's a YAML formatted file, containing the following. The test duration (5 minutes in this example) and the list of devices and services clusters.
 As you can see in this example, we have defined two clusters of 100 devices named kura and sensor.
