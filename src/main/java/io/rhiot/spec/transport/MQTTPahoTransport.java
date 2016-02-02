@@ -28,16 +28,16 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MQTTTransport implements Transport {
+public class MQTTPahoTransport implements Transport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MQTTTransport.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MQTTPahoTransport.class);
 
     private MqttClient client;
     private String clientId;
     private String brokerUrl;
     private List<Listener> listeners = new ArrayList<Listener>();
 
-    public MQTTTransport(String brokerUrl, String clientId) {
+    public MQTTPahoTransport(String brokerUrl, String clientId) {
         this.brokerUrl = brokerUrl;
         this.clientId = clientId;
     }
@@ -48,17 +48,6 @@ public class MQTTTransport implements Transport {
 
         //TODO handle options
         client.connect();
-    }
-
-    @Override
-    public void disconnect() throws Exception {
-        if (client != null && client.isConnected()) {
-            client.disconnect();
-        }
-    }
-
-    @Override
-    public void subscribe(String topic) throws Exception {
         client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
@@ -77,6 +66,17 @@ public class MQTTTransport implements Transport {
 
             }
         });
+    }
+
+    @Override
+    public void disconnect() throws Exception {
+        if (client != null && client.isConnected()) {
+            client.disconnect();
+        }
+    }
+
+    @Override
+    public void subscribe(String topic) throws Exception {
         client.subscribe(topic, 1);
     }
 

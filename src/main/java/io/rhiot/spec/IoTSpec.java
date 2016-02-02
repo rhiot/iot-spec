@@ -32,6 +32,7 @@ public class IoTSpec {
 
     private static final Logger LOG = LoggerFactory.getLogger(IoTSpec.class);
     private static final String CONFIG = "config";
+    private static final String INSTANCE = "instance";
 
     public static void main(String[] args) throws Exception {
 
@@ -44,9 +45,18 @@ public class IoTSpec {
                 .hasArg()
                 .build());
 
+        options.addOption(Option.builder("i")
+                .longOpt(INSTANCE)
+                .desc("Instance of the test; Default 1")
+                .hasArg()
+                .build()
+        );
+
         CommandLine line = parser.parse(options, args);
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         TestProfile test = mapper.readValue(new File(line.getOptionValue(CONFIG, "src/main/resources/test.yaml")), TestProfile.class);
+        int instance = Integer.valueOf(line.getOptionValue(INSTANCE, "1"));
+        test.setInstance(instance);
 
         LOG.info("Scale Test Started");
         final List<Driver> drivers = test.getDrivers();

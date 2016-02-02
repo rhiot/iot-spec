@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import io.rhiot.spec.Cluster;
 import io.rhiot.spec.Driver;
 import io.rhiot.spec.Transport;
-import io.rhiot.spec.feature.Feature;
 import io.rhiot.spec.feature.TelemetryFeature;
-import io.rhiot.spec.transport.MQTTTransport;
+import io.rhiot.spec.transport.MQTTFuseTransport;
+import io.rhiot.spec.transport.MQTTPahoTransport;
 
 @JsonRootName("mqtt-telemetry-device")
 public class MQTTTelemetryDevice extends Driver {
@@ -46,7 +46,8 @@ public class MQTTTelemetryDevice extends Driver {
 
     @Override
     public void init() {
-        Transport transport = new MQTTTransport(brokerURL, name);
+        Transport transport = new MQTTPahoTransport(brokerURL, name);
+        //Transport transport = new MQTTFuseTransport(brokerURL, name);
         this.setTransport(transport);
         TelemetryFeature telemetry = new TelemetryFeature(this, dataTopic);
         telemetry.setDelay(delay);
@@ -54,15 +55,15 @@ public class MQTTTelemetryDevice extends Driver {
     }
 
     @Override
-    public Driver loadFromTemplate(Cluster cluster, int position) {
+    public Driver loadFromTemplate(Cluster cluster, int instance, int position) {
         MQTTTelemetryDevice result = new MQTTTelemetryDevice(this);
         result.setDelay(delay);
         // init device from cluster properties
         if (result.getName() == null && cluster.getName() != null) {
-            result.setName(cluster.getName() + "-" + position);
+            result.setName(cluster.getName() + "-" + instance + "-" + position);
         }
         if (result.dataTopic == null && cluster.getName() != null) {
-            result.setDataTopic(cluster.getName() + "-" + position);
+            result.setDataTopic(cluster.getName() + "-" + instance + "-" + position);
         }
         return result;
     }

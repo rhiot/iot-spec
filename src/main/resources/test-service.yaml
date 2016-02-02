@@ -1,0 +1,8 @@
+duration: 300000
+
+services:
+- driver:
+    type: mqtt-consuming-service
+    brokerURL: tcp://localhost:1883
+    name: wiretap
+    topic: '#'

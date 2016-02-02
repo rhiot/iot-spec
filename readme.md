@@ -52,6 +52,7 @@ At the moment, the test is built as executable jar, so it can be run from the co
     java -jar target/iot-spec-1.0-SNAPSHOT.jar -c src/main/resources/test.yaml
     
 The only configuration option for now is the location of the configuration (`-c` or `--config`) 
+
 We will provide more deployment options in the future.
 
 ## Modeling

@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 public class TestProfile {
 
     long duration;
+    int instance;
 
     List<Cluster> devices = new ArrayList<>();
     List<Cluster> services = new ArrayList<>();
@@ -33,6 +34,14 @@ public class TestProfile {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public int getInstance() {
+        return instance;
+    }
+
+    public void setInstance(int instance) {
+        this.instance = instance;
     }
 
     public List<Cluster> getDevices() {
@@ -58,7 +67,7 @@ public class TestProfile {
      templates.forEach(cluster -> {
          Driver template = cluster.getDriver();
          IntStream.range(0, cluster.getSize()).forEach(position -> {
-             Driver driver = template.loadFromTemplate(cluster, position);
+             Driver driver = template.loadFromTemplate(cluster, instance, position);
              driver.init();
              drivers.add(driver);
          });

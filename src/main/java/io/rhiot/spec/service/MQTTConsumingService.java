@@ -23,7 +23,7 @@ import io.rhiot.spec.Cluster;
 import io.rhiot.spec.Driver;
 import io.rhiot.spec.Transport;
 import io.rhiot.spec.feature.ConsumeFeature;
-import io.rhiot.spec.transport.MQTTTransport;
+import io.rhiot.spec.transport.MQTTPahoTransport;
 
 @JsonRootName("mqtt-consuming-service")
 public class MQTTConsumingService extends Driver {
@@ -44,13 +44,13 @@ public class MQTTConsumingService extends Driver {
 
     @Override
     public void init() {
-        Transport transport = new MQTTTransport(brokerURL, name);
+        Transport transport = new MQTTPahoTransport(brokerURL, name);
         this.setTransport(transport);
         this.getFeatures().add(new ConsumeFeature(this, topic));
     }
 
     @Override
-    public Driver loadFromTemplate(Cluster cluster, int position) {
+    public Driver loadFromTemplate(Cluster cluster, int instance, int position) {
         MQTTConsumingService result = new MQTTConsumingService(this);
         // init device from cluster properties
         if (result.getName() == null && cluster.getName() != null) {

@@ -53,7 +53,7 @@ abstract public class Driver implements Callable<Void> {
         this.name = name;
     }
 
-    public abstract Driver loadFromTemplate(Cluster cluster, int position);
+    public abstract Driver loadFromTemplate(Cluster cluster, int instance, int position);
 
     public abstract void init();
 
