@@ -18,6 +18,7 @@ package io.rhiot.spec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.rhiot.spec.report.CSVReport;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +58,9 @@ public class IoTSpec {
         TestProfile test = mapper.readValue(new File(line.getOptionValue(CONFIG, "src/main/resources/test.yaml")), TestProfile.class);
         int instance = Integer.valueOf(line.getOptionValue(INSTANCE, "1"));
         test.setInstance(instance);
+        test.setReport(new CSVReport("target/report.csv"));
 
-        LOG.info("Scale Test Started");
+        LOG.info("Test '" + test.getName() + "' instance " + instance + " started");
         final List<Driver> drivers = test.getDrivers();
         ExecutorService executorService = Executors.newFixedThreadPool(drivers.size());
         executorService.invokeAll(drivers, test.getDuration(), TimeUnit.MILLISECONDS);
@@ -66,11 +68,18 @@ public class IoTSpec {
 
         drivers.forEach(driver -> {
             driver.stop();
-            LOG.info("Driver " + driver);
-            LOG.info("\t " + driver.getResult());
-        });
 
-        LOG.info("Scale Test Finished");
+            try {
+                test.getReport().print(driver);
+            } catch (Exception e) {
+                LOG.warn("Failed to write reports for the driver " + driver);
+            }
+            LOG.debug("Driver " + driver);
+            LOG.debug("\t " + driver.getResult());
+        });
+        test.getReport().close();
+
+        LOG.info("Test '" + test.getName() + "' instance " + instance + " finished");
 
     }
 }

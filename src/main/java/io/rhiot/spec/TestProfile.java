@@ -16,6 +16,9 @@
  */
 package io.rhiot.spec;
 
+import io.rhiot.spec.report.CSVReport;
+import io.rhiot.spec.report.Report;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -24,6 +27,8 @@ public class TestProfile {
 
     long duration;
     int instance;
+    String name;
+    Report report;
 
     List<Cluster> devices = new ArrayList<>();
     List<Cluster> services = new ArrayList<>();
@@ -42,6 +47,22 @@ public class TestProfile {
 
     public void setInstance(int instance) {
         this.instance = instance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Report getReport() {
+        return report;
+    }
+
+    public void setReport(Report report) {
+        this.report = report;
     }
 
     public List<Cluster> getDevices() {
