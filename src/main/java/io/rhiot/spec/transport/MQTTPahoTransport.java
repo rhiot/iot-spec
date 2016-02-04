@@ -17,10 +17,7 @@
 package io.rhiot.spec.transport;
 
 import io.rhiot.spec.Transport;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +32,9 @@ public class MQTTPahoTransport implements Transport {
     private MqttClient client;
     private String clientId;
     private String brokerUrl;
+    private String username;
+    private String password;
+
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public MQTTPahoTransport(String brokerUrl, String clientId) {
@@ -45,9 +45,16 @@ public class MQTTPahoTransport implements Transport {
     @Override
     public void connect() throws Exception {
         client = new MqttClient(brokerUrl, clientId, new MemoryPersistence());
+        MqttConnectOptions options = new MqttConnectOptions();
+        if (username != null) {
+            options.setUserName(username);
+        }
+        if (password != null) {
+            options.setPassword(password.toCharArray());
+        }
+        options.setConnectionTimeout(60);
 
-        //TODO handle options
-        client.connect();
+        client.connect(options);
         client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
@@ -88,5 +95,21 @@ public class MQTTPahoTransport implements Transport {
     @Override
     public void addListener(Listener listener) {
         listeners.add(listener);
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

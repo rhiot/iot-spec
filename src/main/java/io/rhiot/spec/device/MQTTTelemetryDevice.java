@@ -30,6 +30,8 @@ import io.rhiot.spec.transport.MQTTPahoTransport;
 public class MQTTTelemetryDevice extends Driver {
 
     String brokerURL;
+    String username;
+    String password;
     String dataTopic;
     long delay = 500;
 
@@ -46,7 +48,13 @@ public class MQTTTelemetryDevice extends Driver {
 
     @Override
     public void init() {
-        Transport transport = new MQTTPahoTransport(brokerURL, name);
+        MQTTPahoTransport transport = new MQTTPahoTransport(brokerURL, name);
+        if (username != null) {
+            transport.setUsername(username);
+        }
+        if (password != null) {
+            transport.setPassword(password);
+        }
         //Transport transport = new MQTTFuseTransport(brokerURL, name);
         this.setTransport(transport);
         TelemetryFeature telemetry = new TelemetryFeature(this, dataTopic);
@@ -74,6 +82,22 @@ public class MQTTTelemetryDevice extends Driver {
 
     public void setBrokerURL(String brokerURL) {
         this.brokerURL = brokerURL;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getDataTopic() {

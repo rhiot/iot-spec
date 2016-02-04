@@ -25,9 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class IoTSpec {
 
@@ -63,8 +61,17 @@ public class IoTSpec {
         LOG.info("Test '" + test.getName() + "' instance " + instance + " started");
         final List<Driver> drivers = test.getDrivers();
         ExecutorService executorService = Executors.newFixedThreadPool(drivers.size());
-        executorService.invokeAll(drivers, test.getDuration(), TimeUnit.MILLISECONDS);
+        List<Future<Void>> results = executorService.invokeAll(drivers, test.getDuration(), TimeUnit.MILLISECONDS);
         executorService.shutdownNow();
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+
+        results.forEach(result -> {
+            try {
+                result.get();
+            } catch (ExecutionException execution) {
+                LOG.warn("Exception running driver", execution);
+            } catch (Exception interrupted){}
+        });
 
         drivers.forEach(driver -> {
             driver.stop();

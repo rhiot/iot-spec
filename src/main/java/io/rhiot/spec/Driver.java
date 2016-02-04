@@ -26,9 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
               include = JsonTypeInfo.As.PROPERTY,
@@ -61,15 +59,32 @@ abstract public class Driver implements Callable<Void> {
     public Void call() throws Exception {
         LOG.info(this + " started");
         if (transport != null) {
-            transport.connect();
+            try {
+                transport.connect();
+            } catch (Exception e) {
+                LOG.warn("Error connecting driver " + name, e);
+                return null;
+            }
         }
 
         executorService = Executors.newFixedThreadPool(features.size());
-        executorService.invokeAll(features);
+        List<Future<Void>> results = executorService.invokeAll(features);
         executorService.shutdown();
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+        results.forEach(result -> {
+            try {
+                result.get();
+            } catch (ExecutionException execution) {
+                LOG.warn("Exception running driver", execution);
+            } catch (Exception interrupted){}
+        });
 
         if (transport != null) {
-            transport.disconnect();
+            try {
+                transport.disconnect();
+            } catch (Exception e) {
+                LOG.warn("Error disconnecting driver " + name, e);
+            }
         }
         LOG.info(this + " stopped");
         return null;
