@@ -1,10 +1,11 @@
 #!/bin/bash
 
-java -jar target/iot-spec-1.0-SNAPSHOT.jar -c src/main/resources/test-service.yaml &
+java -jar target/iot-spec-1.0-SNAPSHOT.jar -c src/main/resources/test-service.yaml $@ &
 
 for i in {1..5}
 do
-   java -jar target/iot-spec-1.0-SNAPSHOT.jar -c src/main/resources/test-devices.yaml -i $i &
+   java -jar target/iot-spec-1.0-SNAPSHOT.jar -c src/main/resources/test-devices.yaml -i $i $@ &
+   sleep 1s
 done
 
 wait

@@ -32,6 +32,7 @@ public class IoTSpec {
     private static final Logger LOG = LoggerFactory.getLogger(IoTSpec.class);
     private static final String CONFIG = "config";
     private static final String INSTANCE = "instance";
+    private static final String REPORT = "report";
 
     public static void main(String[] args) throws Exception {
 
@@ -46,17 +47,28 @@ public class IoTSpec {
 
         options.addOption(Option.builder("i")
                 .longOpt(INSTANCE)
-                .desc("Instance of the test; Default 1")
+                .desc("Instance of the test; A default value is 1")
                 .hasArg()
                 .build()
         );
+
+        options.addOption(Option.builder("r")
+                .longOpt(REPORT)
+                .desc("Location of the test report. A default value is 'target/report.csv'")
+                .hasArg()
+                .build()
+        );
+
+
 
         CommandLine line = parser.parse(options, args);
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         TestProfile test = mapper.readValue(new File(line.getOptionValue(CONFIG, "src/main/resources/test.yaml")), TestProfile.class);
         int instance = Integer.valueOf(line.getOptionValue(INSTANCE, "1"));
         test.setInstance(instance);
-        test.setReport(new CSVReport("target/report.csv"));
+        String report = line.getOptionValue(REPORT, "target/report.csv");
+        test.setReport(new CSVReport(report));
+
 
         LOG.info("Test '" + test.getName() + "' instance " + instance + " started");
         final List<Driver> drivers = test.getDrivers();
