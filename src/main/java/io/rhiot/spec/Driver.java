@@ -35,6 +35,11 @@ import java.util.concurrent.*;
     @JsonSubTypes.Type(value = MQTTTelemetryDevice.class, name = "mqtt-telemetry-device"),
     @JsonSubTypes.Type(value = MQTTConsumingService.class, name = "mqtt-consuming-service")
 })
+/**
+ * A base class for every device or service model that can be run by this test suite.
+ * Contains a {@see io.rhiot.spec.Transport} and a list of {@see io.rhiot.spec.feature.Feature}s
+ * To create new devices or services, extend this class and implement abstract methods.
+ */
 abstract public class Driver implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Driver.class);
@@ -51,8 +56,21 @@ abstract public class Driver implements Callable<Void> {
         this.name = name;
     }
 
+    /**
+     * Initialize parameters of the driver based on the
+     * cluster details, position in the cluster and
+     * instance of the test
+     *
+     * @param cluster
+     * @param instance
+     * @param position
+     * @return
+     */
     public abstract Driver loadFromTemplate(Cluster cluster, int instance, int position);
 
+    /**
+     * Initialize the driver. Here you'll initialize your transport and features
+     */
     public abstract void init();
 
     @Override

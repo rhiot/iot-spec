@@ -18,16 +18,45 @@ package io.rhiot.spec;
 
 import io.rhiot.spec.transport.Listener;
 
+/**
+ * Transport used to connect to the server platform
+ */
 public interface Transport {
 
+    /**
+     * Connect to the platform
+     * @throws Exception
+     */
     public void connect() throws Exception;
 
+    /**
+     * Disconnect from the platform
+     * @throws Exception
+     */
     public void disconnect() throws Exception;
 
-    public void subscribe(String topic) throws Exception;
+    /**
+     * Subscribe to the destination
+     *
+     * @param destination
+     * @throws Exception
+     */
+    public void subscribe(String destination) throws Exception;
 
-    public void publish(String topic, byte[] message) throws Exception;
+    /**
+     * Publish the message to the destination
+     *
+     * @param destination
+     * @param message
+     * @throws Exception
+     */
+    public void publish(String destination, byte[] message) throws Exception;
 
+    /**
+     * Add subscription listener
+     *
+     * @param listener
+     */
     public void addListener(Listener listener);
 
 }

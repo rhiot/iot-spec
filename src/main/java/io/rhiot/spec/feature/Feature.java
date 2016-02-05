@@ -20,6 +20,11 @@ import io.rhiot.spec.Driver;
 
 import java.util.concurrent.Callable;
 
+/**
+ * Basic feature of the driver. Implementations of this class
+ * provide basic communication patterns of the driver using the
+ * transport
+ */
 public abstract class Feature implements Callable<Void> {
 
     protected Driver device;

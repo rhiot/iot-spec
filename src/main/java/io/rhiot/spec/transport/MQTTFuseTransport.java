@@ -81,13 +81,13 @@ public class MQTTFuseTransport implements Transport {
     }
 
     @Override
-    public void subscribe(String topic) throws Exception {
-        connection.subscribe(new Topic[]{new Topic(topic, QoS.AT_MOST_ONCE)}, new EmptyCallback<>());
+    public void subscribe(String destination) throws Exception {
+        connection.subscribe(new Topic[]{new Topic(destination, QoS.AT_MOST_ONCE)}, new EmptyCallback<>());
     }
 
     @Override
-    public void publish(String topic, byte[] message) throws Exception {
-        connection.publish(topic, message, QoS.AT_MOST_ONCE, false, new EmptyCallback<Void>());
+    public void publish(String destination, byte[] message) throws Exception {
+        connection.publish(destination, message, QoS.AT_MOST_ONCE, false, new EmptyCallback<Void>());
     }
 
     @Override

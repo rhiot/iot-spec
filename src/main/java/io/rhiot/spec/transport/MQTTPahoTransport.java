@@ -83,13 +83,13 @@ public class MQTTPahoTransport implements Transport {
     }
 
     @Override
-    public void subscribe(String topic) throws Exception {
-        client.subscribe(topic, 1);
+    public void subscribe(String destination) throws Exception {
+        client.subscribe(destination, 1);
     }
 
     @Override
-    public void publish(String topic, byte[] message) throws Exception {
-        client.publish(topic, message, 1, false);
+    public void publish(String destination, byte[] message) throws Exception {
+        client.publish(destination, message, 1, false);
     }
 
     @Override
