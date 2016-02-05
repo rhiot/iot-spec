@@ -19,60 +19,70 @@ package io.rhiot.spec.device;
 import io.rhiot.spec.Cluster;
 import io.rhiot.spec.Driver;
 import io.rhiot.spec.feature.TelemetryFeature;
-import io.rhiot.spec.transport.MQTTPahoTransport;
+import io.rhiot.spec.transport.QpidJMSTransport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("mqtt-telemetry-device")
-public class MQTTTelemetryDevice extends Driver {
+/**
+ * Telemetry Device that communicates over AMQP
+ */
+@JsonRootName("amqp-telemetry-device")
+public class AMQPTelemetryDevice extends Driver {
 
     String brokerURL;
     String username;
     String password;
-    String dataTopic;
+    String dataDestination;
     long delay = 500;
 
     @JsonCreator
-    public MQTTTelemetryDevice(@JsonProperty("brokerURL")String brokerURL, @JsonProperty("name")String name, @JsonProperty("data-topic")String dataTopic) {
+    public AMQPTelemetryDevice(@JsonProperty("brokerURL")String brokerURL, @JsonProperty("name")String name, @JsonProperty("data-destination")String dataDestination) {
         super(name);
         this.brokerURL = brokerURL;
-        this.dataTopic = dataTopic;
+        this.dataDestination = dataDestination;
     }
 
-    public MQTTTelemetryDevice(MQTTTelemetryDevice original) {
-        this(original.getBrokerURL(), original.getName(), original.getDataTopic()) ;
+    public AMQPTelemetryDevice(AMQPTelemetryDevice original) {
+        this(original.getBrokerURL(), original.getName(), original.getDataDestination()) ;
+    }
+
+    @Override
+    public Driver loadFromTemplate(Cluster cluster, int instance, int position) {
+        AMQPTelemetryDevice result = new AMQPTelemetryDevice(this);
+        result.setDelay(delay);
+
+        // Initialize device from cluster properties
+        if (result.getName() == null && cluster.getName() != null) {
+            result.setName(cluster.getName() + "-" + instance + "-" + position);
+        }
+
+        // Use the cluster properties, by default this will create a Topic destination.
+        if (result.dataDestination == null && cluster.getName() != null) {
+            result.setDataDestination(cluster.getName() + "-" + instance + "-" + position);
+        }
+
+        return result;
     }
 
     @Override
     public void init() {
-        MQTTPahoTransport transport = new MQTTPahoTransport(brokerURL, name);
+        QpidJMSTransport transport = new QpidJMSTransport(brokerURL, name);
+
         if (username != null) {
             transport.setUsername(username);
         }
         if (password != null) {
             transport.setPassword(password);
         }
-        //Transport transport = new MQTTFuseTransport(brokerURL, name);
-        this.setTransport(transport);
-        TelemetryFeature telemetry = new TelemetryFeature(this, dataTopic);
-        telemetry.setDelay(delay);
-        this.getFeatures().add(telemetry);
-    }
 
-    @Override
-    public Driver loadFromTemplate(Cluster cluster, int instance, int position) {
-        MQTTTelemetryDevice result = new MQTTTelemetryDevice(this);
-        result.setDelay(delay);
-        // init device from cluster properties
-        if (result.getName() == null && cluster.getName() != null) {
-            result.setName(cluster.getName() + "-" + instance + "-" + position);
-        }
-        if (result.dataTopic == null && cluster.getName() != null) {
-            result.setDataTopic(cluster.getName() + "-" + instance + "-" + position);
-        }
-        return result;
+        setTransport(transport);
+
+        TelemetryFeature telemetry = new TelemetryFeature(this, dataDestination);
+        telemetry.setDelay(delay);
+
+        getFeatures().add(telemetry);
     }
 
     public String getBrokerURL() {
@@ -99,12 +109,12 @@ public class MQTTTelemetryDevice extends Driver {
         this.password = password;
     }
 
-    public String getDataTopic() {
-        return dataTopic;
+    public String getDataDestination() {
+        return dataDestination;
     }
 
-    public void setDataTopic(String dataTopic) {
-        this.dataTopic = dataTopic;
+    public void setDataDestination(String dataDestination) {
+        this.dataDestination = dataDestination;
     }
 
     public long getDelay() {
@@ -117,9 +127,9 @@ public class MQTTTelemetryDevice extends Driver {
 
     @Override
     public String toString() {
-        return "MQTTTelemetryDevice{" +
+        return "AMQPTelemetryDevice{" +
                 "brokerURL='" + brokerURL + '\'' +
-                ", dataTopic='" + dataTopic + '\'' +
+                ", dataDestination='" + dataDestination + '\'' +
                 ", delay=" + delay +
                 ", name=" + name +
                 '}';

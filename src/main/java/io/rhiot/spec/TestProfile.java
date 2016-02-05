@@ -16,7 +16,6 @@
  */
 package io.rhiot.spec;
 
-import io.rhiot.spec.report.CSVReport;
 import io.rhiot.spec.report.Report;
 
 import java.util.ArrayList;
@@ -82,19 +81,18 @@ public class TestProfile {
     }
 
     public List<Driver> getDrivers() {
-     List<Driver> drivers = new ArrayList<>();
-     List<Cluster> templates = new ArrayList(devices);
-     templates.addAll(services);
-     templates.forEach(cluster -> {
-         Driver template = cluster.getDriver();
-         IntStream.range(0, cluster.getSize()).forEach(position -> {
-             Driver driver = template.loadFromTemplate(cluster, instance, position);
-             driver.init();
-             drivers.add(driver);
-         });
-     });
+        List<Driver> drivers = new ArrayList<>();
+        List<Cluster> templates = new ArrayList<Cluster>(devices);
+        templates.addAll(services);
+        templates.forEach(cluster -> {
+            Driver template = cluster.getDriver();
+            IntStream.range(0, cluster.getSize()).forEach(position -> {
+                Driver driver = template.loadFromTemplate(cluster, instance, position);
+                driver.init();
+                drivers.add(driver);
+            });
+        });
 
-
-     return drivers;
+        return drivers;
     }
 }
