@@ -1,3 +1,6 @@
 /.idea
 /iot-spec.iml
 /target
+.classpath
+.project
+.settings/
