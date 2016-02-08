@@ -16,24 +16,35 @@
  */
 package io.rhiot.spec;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.rhiot.spec.device.AMQPTelemetryDevice;
 import io.rhiot.spec.device.MQTTTelemetryDevice;
 import io.rhiot.spec.feature.Feature;
+import io.rhiot.spec.service.AMQPConsumingService;
 import io.rhiot.spec.service.MQTTConsumingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
               include = JsonTypeInfo.As.PROPERTY,
               property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = MQTTTelemetryDevice.class, name = "mqtt-telemetry-device"),
-    @JsonSubTypes.Type(value = MQTTConsumingService.class, name = "mqtt-consuming-service")
+    @JsonSubTypes.Type(value = MQTTConsumingService.class, name = "mqtt-consuming-service"),
+    @JsonSubTypes.Type(value = AMQPTelemetryDevice.class, name = "amqp-telemetry-device"),
+    @JsonSubTypes.Type(value = AMQPConsumingService.class, name = "amqp-consuming-service")
 })
 /**
  * A base class for every device or service model that can be run by this test suite.
