@@ -2,7 +2,7 @@
 
 java -jar target/iot-spec-1.0-SNAPSHOT.jar -c src/main/resources/test-service.yaml $@ &
 
-for i in {1..5}
+for i in {1..33}
 do
    java -jar target/iot-spec-1.0-SNAPSHOT.jar -c src/main/resources/test-devices.yaml -i $i $@ &
    sleep 1s

@@ -52,7 +52,8 @@ public class MQTTPahoTransport implements Transport {
         if (password != null) {
             options.setPassword(password.toCharArray());
         }
-        options.setConnectionTimeout(60);
+        options.setCleanSession(false);
+        options.setConnectionTimeout(0);
 
         client.connect(options);
         client.setCallback(new MqttCallback() {
