@@ -24,7 +24,7 @@ ACTIVEMQ_BASE=`cd "$ACTIVEMQ_BASE" && pwd`
 
 ## Add system properties for this instance here (if needed), e.g
 export ACTIVEMQ_OPTS_MEMORY="-Xms256M -Xmx2G"
-export ACTIVEMQ_OPTS="$ACTIVEMQ_OPTS_MEMORY -Dorg.apache.activemq.UseDedicatedTaskRunner=false -Djava.util.logging.config.file=logging.properties -Dorg.apache.activemq.kahaDB.files.skipMetadataUpdate=true -Dorg.apache.activemq.transport.nio.SelectorManager.maximumPoolSize=1800"
+export ACTIVEMQ_OPTS="$ACTIVEMQ_OPTS_MEMORY -Dorg.apache.activemq.UseDedicatedTaskRunner=false -Djava.util.logging.config.file=logging.properties -Dorg.apache.activemq.kahaDB.files.skipMetadataUpdate=true -Dorg.apache.activemq.transport.nio.SelectorManager.corePoolSize=1800 -Dorg.apache.activemq.transport.nio.SelectorManager.maximumPoolSize=1800"
 
 export ACTIVEMQ_HOME=/opt/activemq
 export ACTIVEMQ_BASE=$ACTIVEMQ_BASE
